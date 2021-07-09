@@ -46,7 +46,7 @@ const runCompanyApp = () => {
                 addDepartment();
                 break;
             case "Add Employee":
-                addEmplyee();
+                addEmpolyee();
                 break;
             case "Add Role":
                 addRole();
@@ -63,35 +63,111 @@ const runCompanyApp = () => {
 
 const viewDepartments = () => {
     connection.query(
+        "SELECT id As ID, name AS Department From department",
+        (err, res) => {
+            if (err) throw err;
+            console.table("\nDEPARTMENTS", res);
+            runCompanyApp();
+        }
+    );
+};
 
+const viewEmployees = () => {
+    connection.query(
+        "SELECT T1.id AS ID, concat(T1.first_name, ' ', T1.last_name) AS Name, concat(T2.first_name, ' ', T2.last_name) AS 'Reports To', jobs.title AS 'Job Title', jobs.salary AS Salary, department.name AS Department FROM employee T1 LEFT JOIN jobs ON (T1.jobs_id = jobs.id) LEFT JOIN department ON (jobs.department_id = department.id) LEFT JOIN employee T2 ON (T1.manager_id = T2.id)",
+        (err, res) => {
+            if (err) throw err;
+            console.table("\nEMPLOYEES", res);
+            runCompanyApp();
+        }
+    );
+};
+
+const viewRoles = () => {
+    connection.query(
+        "SELECT roles.id AS ID, roles.title AS Title, roles.salary AS Salary, department.name AS Department FROM jobs LEFT JOIN department ON (jobs.department_id = department.id)",
+        (err, res) => {
+            if (err) throw err;
+            console.table("\nROLES", res);
+            runCompanyApp();
+        }
+    );
+};
+
+const addDepartment = () => {
+    inquirer.prompt(
+        {
+            type: "input",
+            name: "departName",
+            message: "What is the new department?",
+        }
+    ).then((response) => {
+        connection.query(
+            "INSERT INTO department SET ?",
+            {
+                name = response.name
+            },
+            (err) => {
+                if (err) throw err;
+                console.log(`\nDepartment ${response.departname} was added\n`);
+                runCompanyApp();
+            }
+        );
+    });
+};
+
+const addEmpolyee = () => {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "first_name",
+            message: "What is the employee's first name?",
+        },
+        {
+            type: "input",
+            name: "last_name",
+            message: "What is the employee's last name?"
+        },
+        {
+            type: "input",
+            name: "salary",
+            message: "How much does the employee make?"
+        },
+        {
+            type: "list",
+            name: "roles",
+            message: "what is the employee's role?",
+            choices: function () {
+                var jobsList = [],
+                for (let i = 0; i < res.length; i++) {
+                    jobsList.push(res[i].title);
+                }
+                return jobsList;
+            },
+        },
+    ]
     )
-}
-const viewDepartments = () => {
+        .then((response) => {
+            connection.query(
+                "INSERT INTO department SET ?",
+                {
+                    name = response.name
+                },
+                (err) => {
+                    if (err) throw err;
+                    console.log(`\nDepartment ${response.departname} was added\n`);
+                    runCompanyApp();
+                }
+            );
+        });
+};
+
+const addRole = () => {
     connection.query(
 
     )
 }
-const viewDepartments = () => {
-    connection.query(
-
-    )
-}
-const viewDepartments = () => {
-    connection.query(
-
-    )
-}
-const viewDepartments = () => {
-    connection.query(
-
-    )
-}
-const viewDepartments = () => {
-    connection.query(
-
-    )
-}
-const viewDepartments = () => {
+const updateEmployeeRole = () => {
     connection.query(
 
     )
